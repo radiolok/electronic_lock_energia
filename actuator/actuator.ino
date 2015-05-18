@@ -26,7 +26,7 @@ Finite state machine:
 enum {IDLE=0x01, ACTIVE, ALERT};
 unsigned int fsm = IDLE;
 
-static unsigned char sensor = 8;
+static unsigned char sensor = PUSH1;
 static unsigned char releopen = BLUE_LED;
 static unsigned char releclose = GREEN_LED;
 
@@ -61,6 +61,9 @@ void loop()
         if (rxData[1] == ACTIVE){
           //change state stage
           fsm = ACTIVE;
+          txData[1] = ACTIVE;//Set command
+          txData[2] = 0x00;
+          Radio.transmit(ADDRESS_REMOTE, (unsigned char*)&txData, 2); 
           //send 500ms inpuls to actuator
           digitalWrite(releclose, HIGH);
           delay(500);
@@ -80,6 +83,9 @@ void loop()
         if (rxData[1] == IDLE){
           //change state stage
           fsm = IDLE;
+          txData[1] = IDLE;//Set command
+          txData[2] = 0x00;
+          Radio.transmit(ADDRESS_REMOTE, (unsigned char*)&txData, 2); 
           //send 500ms inpuls to actuator
           digitalWrite(releopen, HIGH);
           delay(500);
@@ -100,6 +106,9 @@ void loop()
         if (rxData[1] == IDLE){
           //change state stage
           fsm = IDLE;
+          txData[1] = IDLE;//Set command
+          txData[2] = 0x00;
+          Radio.transmit(ADDRESS_REMOTE, (unsigned char*)&txData, 2); 
           //send 500ms inpuls to actuator
           digitalWrite(releopen, HIGH);
           delay(500);
@@ -122,8 +131,9 @@ void loop()
 void checkperimeter(){
     uint8_t sensorstate = digitalRead(sensor);
     if (sensorstate == LOW){
+      Serial.println("Alert!");
           //alert!!
-          fsm = ALERT;
+        fsm = ALERT;
         txData[1] = ALERT;//Set command
         txData[2] = 0x00;
         Radio.transmit(ADDRESS_REMOTE, (unsigned char*)&txData, 2);     

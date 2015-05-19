@@ -26,10 +26,11 @@ Finite state machine:
 enum {IDLE=0x01, ACTIVE, ALERT};
 unsigned int fsm = IDLE;
 
-static unsigned char sensor = PUSH1;
-static unsigned char releopen = BLUE_LED;
-static unsigned char releclose = GREEN_LED;
-
+static unsigned char sensor = 11;
+static unsigned char releopen = 9;
+static unsigned char releclose = 10;
+static unsigned char releopenled = BLUE_LED;
+static unsigned char relecloseled = GREEN_LED;
 
 // -----------------------------------------------------------------------------
 // Main example
@@ -38,7 +39,13 @@ void setup()
 {
   pinMode(sensor, INPUT_PULLUP);
   pinMode(releopen, OUTPUT);
+  digitalWrite(releopen, HIGH);
+  pinMode(releopenled, OUTPUT);
+  pinMode(relecloseled, OUTPUT);
   pinMode(releclose, OUTPUT);
+  digitalWrite(releclose, HIGH);
+  pinMode(12, OUTPUT);
+  pinMode(12, LOW); //return pin for sensor
  
   Radio.begin(ADDRESS_LOCAL, CHANNEL_1, POWER_MAX);
 
@@ -46,8 +53,6 @@ void setup()
   Serial.begin(9600);
   
   txData[0] = ADDRESS_LOCAL;//set zer byte as our address
-  pinMode(RED_LED, OUTPUT);       // Use red LED to display message reception
-  digitalWrite(RED_LED, LOW);
 }
 uint8_t length = 0;
 
@@ -65,9 +70,11 @@ void loop()
           txData[2] = 0x00;
           Radio.transmit(ADDRESS_REMOTE, (unsigned char*)&txData, 2); 
           //send 500ms inpuls to actuator
-          digitalWrite(releclose, HIGH);
-          delay(500);
           digitalWrite(releclose, LOW);
+          digitalWrite(relecloseled, HIGH);
+          delay(500);
+          digitalWrite(releclose, HIGH);
+          digitalWrite(relecloseled, LOW);
         }
         else{
           fsm = IDLE;
@@ -87,9 +94,11 @@ void loop()
           txData[2] = 0x00;
           Radio.transmit(ADDRESS_REMOTE, (unsigned char*)&txData, 2); 
           //send 500ms inpuls to actuator
-          digitalWrite(releopen, HIGH);
-          delay(500);
           digitalWrite(releopen, LOW);
+          digitalWrite(releopenled, HIGH);
+          delay(500);
+          digitalWrite(releopen, HIGH);
+          digitalWrite(releopenled, LOW);
         }
         else{
           fsm = ACTIVE;
@@ -110,9 +119,11 @@ void loop()
           txData[2] = 0x00;
           Radio.transmit(ADDRESS_REMOTE, (unsigned char*)&txData, 2); 
           //send 500ms inpuls to actuator
-          digitalWrite(releopen, HIGH);
-          delay(500);
           digitalWrite(releopen, LOW);
+          digitalWrite(releopenled, HIGH);
+          delay(500);
+          digitalWrite(releopen, HIGH);
+          digitalWrite(releopenled, LOW);
         }
         else{
           fsm = ALERT;

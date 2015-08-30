@@ -1,11 +1,6 @@
 #include <SPI.h>
 #include <AIR430BoostETSI.h>
 
-// -----------------------------------------------------------------------------
-/**
- *  Defines, enumerations, and structure definitions
- */
-
 #define ADDRESS_LOCAL    0x03
 #define ADDRESS_REMOTE   0x01
 
